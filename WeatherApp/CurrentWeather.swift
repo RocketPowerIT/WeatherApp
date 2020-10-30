@@ -17,6 +17,27 @@ struct CurrentWeather {
   let icon: UIImage
 }
 
+extension CurrentWeather: JSONDecodable {
+  init?(JSON: [String : AnyObject]) {
+    guard let temperature = JSON["temperature"] as? Double,
+    let apparentTemperature = JSON["apparentTemperature"] as? Double,
+    let humidity = JSON["humidity"] as? Double,
+    let pressure = JSON["pressure"] as? Double,
+      let iconString = JSON["icon"] as? String else {
+        return nil
+    }
+    
+    let icon = WeatherIconManager(rawValue: iconString).image
+    
+    self.temperature = temperature
+    self.appearentTemperature = apparentTemperature
+    self.humidity = humidity
+    self.pressure = pressure
+    self.icon = icon
+    
+  }
+}
+
 extension CurrentWeather {
 
     var pressureString: String {

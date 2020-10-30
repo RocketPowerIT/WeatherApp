@@ -22,16 +22,26 @@ class ViewController: UIViewController {
     @IBAction func refreshButtonTapd(_ sender: UIButton) {
       }
     
+    lazy var weatherManager = APIWeatherManager(apiKey: "2a6d8e376a69c1ae07d4a52dd0c2dfdc")
+    let coordinates = Coordinates(latitude: 54.741704, longitude: 55.984471)
+    
     override func viewDidLoad() {
-        super.viewDidLoad()
+      super.viewDidLoad()
 
-        let icon = WeatherIconManager.Cloudy.image
-        let currentWeather = CurrentWeather(temperature: 10.0,
-                                            appearentTemperature: 7.0,
-                                            humidity: 30.0,
-                                            pressure: 755.0,
-                                            icon: icon)
-        updateUIWith(currentWeather: currentWeather)
+      weatherManager.fetchCurrentWeatherWith(coordinates: coordinates) { (result) in
+        switch result {
+        case .Success(let currentWeather):
+          self.updateUIWith(currentWeather: currentWeather)
+        case .Failure(let error as NSError):
+          
+          let alertController = UIAlertController(title: "Unable to get data ", message: "\(error.localizedDescription)", preferredStyle: .alert)
+          let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+          alertController.addAction(okAction)
+          
+          self.present(alertController, animated: true, completion: nil)
+        default: break
+        }
+      }
     }
 
     func updateUIWith(currentWeather: CurrentWeather){
